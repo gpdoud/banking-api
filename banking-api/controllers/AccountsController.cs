@@ -29,6 +29,18 @@ public class AccountsController : ControllerBase {
         return acct;
     }
 
+    [HttpGet("accounts/{custId}")]
+    public async Task<ActionResult<IEnumerable<Account>>> GetAccountsForCustomer(int custId) {
+        var accts = await _context.Accounts
+                                    .Include(x => x.Transactions)
+                                    .Where(x => x.CustomerId == custId)
+                                    .ToListAsync();
+        if(accts is null)
+            return NotFound();
+
+        return accts;
+    }
+
     [HttpPost]
     public async Task<ActionResult<Account>> PostAccount(Account acct) {
         acct.CreatedDate = DateTime.Now;
